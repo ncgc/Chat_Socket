@@ -1,0 +1,63 @@
+package server;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Client {
+	private Socket socket;
+	
+	public void criaSocket(String IP_Servidor, int porta) throws UnknownHostException, IOException {
+		this.socket = new Socket(IP_Servidor,porta);
+		System.out.println("Conexao estabelecida");
+	}
+	
+	/**
+	 * Cria streams de entrada e saída de dados entre servidor e cliente.
+	 * @param socket socket que intermedia a comunicacao entre servidor e cliente
+	 * @throws IOException 
+	 */
+	private void tratarConexao(Socket socket) throws IOException{
+		try {
+			Scanner input = new Scanner(System.in);
+			PrintStream output = new PrintStream(socket.getOutputStream());
+			
+			while (input.hasNextLine()){
+				output.println(input.nextLine());
+			}
+			
+			output.close();
+			input.close();
+		} catch (IOException e) {
+			//e.printStackTrace();
+			System.out.println("Erro durante o envio da mensagem do cliente ao servidor");
+			System.out.println("Erro: " + e.getMessage());
+			
+		} finally {
+			fechaSocket(socket);
+		}
+	}
+	
+	/**
+	 * Finaliza um socket, desconectando o cliente conectado pelo socket informado e o servidor
+	 * @param socket socket a ser finalizado
+	 * @throws IOException 
+	 */
+	private void fechaSocket(Socket socket) throws IOException {
+		socket.close();
+	}
+	
+	
+	public static void main(String[] args) {
+		Client client = new Client();
+		try {
+			client.criaSocket("127.0.0.1", 2525);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+}

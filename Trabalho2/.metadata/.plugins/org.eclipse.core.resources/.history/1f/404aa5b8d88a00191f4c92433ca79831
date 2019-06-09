@@ -1,0 +1,22 @@
+package server;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	
+	private void criarServerSocket(int porta) {
+		try {
+			serverSocket = new ServerSocket(porta);
+		} catch (IOException e) {
+			System.out.println("A porta informada já está em utilizacao. Defina outra");
+		}
+	}
+	
+	public static void main(String[] args) {
+		
+
+	}
+
+}

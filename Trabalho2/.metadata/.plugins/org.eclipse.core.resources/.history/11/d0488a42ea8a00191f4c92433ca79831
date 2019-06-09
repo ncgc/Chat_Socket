@@ -1,0 +1,99 @@
+package server;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	private int porta;
+	private List<PrintStream> clientes;
+	
+	public Server(int porta) {
+		this.porta = porta;
+		this.clientes = new ArrayList<PrintStream>();
+	}
+	
+	/**
+	 * O servidor fica "escutando" a porta informada. 
+	 * @param Porta 
+	 */
+	private void criarServerSocket() throws IOException {
+		this.serverSocket = new ServerSocket(this.porta);
+		System.out.println("Aguardando conexao na porta " + porta);
+	}
+	
+	/**
+	 * O método accept() bloqueia a execução até que o servidor receba um pedido de conexão
+	 * Quando o pedido é aceito, cria-se um socket entre o servidor e o cliente.
+	 * @throws IOException
+	 * @return socket entre servidor e cliente
+	 */
+	private void esperaConexao() throws IOException {
+		Socket socket = serverSocket.accept();
+		System.out.println("Connectando cliente..." + socket.getInetAddress().getHostAddress());
+		
+		//adiciona cliente a lista
+		PrintStream ps = new PrintStream(socket.getOutputStream());
+		this.clientes.add(ps);
+		
+		//cria tratador de conexao em uma nova thread
+		TrataConexao tc = new TrataConexao(socket.getInputStream(), this);
+		new Thread(tc).start();
+		
+	}
+	
+	/**
+	 * Cria streams de entrada e saída de dados entre servidor e cliente.
+	 * @param socket socket que intermedia a comunicacao entre servidor e cliente
+	 * @throws IOException 
+	 */
+	private void tratarConexao(Socket socket) throws IOException{
+		try {
+			Scanner input = new Scanner(socket.getInputStream());
+			while (input.hasNextLine()) {
+				System.out.println(input.nextLine());
+			}
+			
+			input.close();
+		} catch (IOException e) {
+		//	e.printStackTrace();
+			System.out.println("Problema com o tratamento da conexao com o cliente: " + socket.getInetAddress().getHostAddress());
+			System.out.println("Erro: " + e.getMessage());
+		} finally {
+			fechaSocket(socket);
+		}
+	}
+	
+	/**
+	 * Finaliza um socket, desconectando o cliente conectado pelo socket informado e o servidor
+	 * @param socket socket a ser finalizado
+	 * @throws IOException 
+	 */
+	private void fechaSocket(Socket socket) throws IOException {
+		socket.close();
+		System.out.println("Cliente desconectado: " + socket.getInetAddress().getHostAddress());
+	}
+	
+	
+	public static void main(String[] args) {
+		try {
+			Server server = new Server();
+			
+			server.criarServerSocket(2525);
+			Socket socket = server.esperaConexao();
+			server.tratarConexao(socket);
+		}
+		catch(IOException e){
+			
+		}
+		
+		
+
+	}
+
+}
