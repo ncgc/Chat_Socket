@@ -18,13 +18,21 @@ public class Server {
 		this.clientes = new ArrayList<PrintStream>();
 	}
 	
-	
+	/**
+	 * O servidor fica "escutando" a porta informada. 
+	 * @param Porta 
+	 */
 	private void criarServerSocket() throws IOException {
 		this.serverSocket = new ServerSocket(this.porta);
 		System.out.println("Aguardando conexao na porta " + this.porta);
 	}
 	
-	
+	/**
+	 * O método accept() bloqueia a execução até que o servidor receba um pedido de conexão
+	 * Quando o pedido é aceito, cria-se um socket entre o servidor e o cliente.
+	 * @throws IOException
+	 * @return socket entre servidor e cliente
+	 */
 	private void esperaConexao() throws IOException {
 		Socket socket = serverSocket.accept();
 		System.out.println("Connectando cliente..." + socket.getInetAddress().getHostAddress());
@@ -43,10 +51,7 @@ public class Server {
         for (PrintStream cliente : this.clientes) {
             cliente.println(msg);
         }
-        System.out.println(msg); 
     }
-	
-	
 	
 	public static void main(String[] args) throws IOException {
 		Server servidor = new Server(2525);

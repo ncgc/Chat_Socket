@@ -43,7 +43,7 @@ public class Server {
         for (PrintStream cliente : this.clientes) {
             cliente.println(msg);
         }
-        System.out.println(msg); 
+        System.out.println(msg);
     }
 	
 	
