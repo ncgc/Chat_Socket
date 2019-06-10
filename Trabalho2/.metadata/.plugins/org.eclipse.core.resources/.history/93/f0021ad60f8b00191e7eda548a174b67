@@ -1,0 +1,29 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Enviador extends Thread implements Runnable{
+	private Socket socket;
+	private String nome;
+	
+	public Enviador(Socket socket, String nome) {
+		this.socket = socket;
+		this.nome= nome;
+	}
+	
+	@Override
+	public void run() {
+		BufferedReader keyboad = new BufferedReader(new InputStreamReader(System.in));
+		PrintStream output = new PrintStream(socket.getOutputStream());
+		
+		while (true) {
+			System.out.print("> ");
+		
+	}
+	
+
+}

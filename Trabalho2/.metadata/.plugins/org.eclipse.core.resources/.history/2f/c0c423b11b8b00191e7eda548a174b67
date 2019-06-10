@@ -1,0 +1,19 @@
+package wthread;
+
+import java.io.PrintStream;
+
+public class RecebedorServidor implements Runnable {
+	private PrintStream output;
+	private String nome = "Server";
+	
+	public RecebedorServidor(OutputStream output) {
+		this.output = output;
+	}
+
+	@Override
+	public void run() {
+		
+		
+	}
+
+}

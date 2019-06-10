@@ -1,0 +1,19 @@
+package wthread;
+
+import java.io.InputStream;
+
+public class Enviador implements Runnable{
+	private InputStream input;
+	
+	public Enviador(InputStream input) {
+		this.input = input;
+	}
+
+	@Override
+	public void run() {
+		Scanner s = new Scanner(this.input);
+		
+	}
+	
+
+}

@@ -1,0 +1,20 @@
+package wthread;
+
+import java.io.InputStream;
+import java.util.Scanner;
+
+public class RecebedorCliente implements Runnable {
+	private InputStream input;
+	
+	public RecebedorCliente(InputStream input) {
+		this.input = input;
+	}
+	
+	@Override
+	public void run() {
+		Scanner s = new Scanner(this.input);
+		while(s.hasNextLine()) {
+			System.out.println(s.nextLine());
+		}
+	}
+}

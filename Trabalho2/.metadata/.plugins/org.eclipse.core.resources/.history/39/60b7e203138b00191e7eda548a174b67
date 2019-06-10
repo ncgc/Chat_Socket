@@ -1,0 +1,53 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+
+
+public class Conexao extends Thread implements Runnable {
+	private Socket socket;
+	private Server servidor;
+	private Client cliente;
+	
+	public Conexao(Socket socket) {
+		this.socket = socket;
+	}
+
+	public void setServer(Server servidor) {
+		this.servidor = servidor;
+	}
+	
+	public void setClient(Client cliente) {
+		this.cliente = cliente;
+	}
+	
+	
+	
+	@Override
+	public void run() {
+		try {
+			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+			while (true) {
+				String linha = input.readLine();
+
+				if (linha == "/end") {
+					System.out.println("Fim da conexão");
+					this.interrupt();
+					break;
+				}
+
+				System.out.println(linha);
+				System.out.println("> ");
+
+			}
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+}

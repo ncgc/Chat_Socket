@@ -1,0 +1,50 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.List;
+
+public class Conexao implements Runnable{
+	private Socket socket;
+	private String name;
+	private List<PrintStream> recebedores;
+
+	public Conexao(Socket socket) {
+		this.socket = socket;
+		
+	}
+	@Override
+	public void run() {
+		
+		try {
+			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintStream output = new PrintStream(socket.getOutputStream());
+
+			name = input.readLine();
+
+			if (name == null) {
+				return;
+			}
+
+			clientes.add(output);
+
+			String linha = input.readLine();
+
+			while (linha != null && !(linha.trim().equals(""))) {
+				broadCast(output, " diz: ", linha);
+				linha = input.readLine();
+			}
+
+			broadCast(output, " saiu: ", " do chat!");
+			clientes.remove(output);
+			socket.close();
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+}

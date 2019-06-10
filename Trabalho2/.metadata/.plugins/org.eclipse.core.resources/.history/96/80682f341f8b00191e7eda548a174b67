@@ -1,0 +1,52 @@
+package wthread;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	private int porta;
+	private List<PrintStream> clientes;
+	private Socket socket;
+	
+	public Server(int porta) {
+		this.porta = porta;
+		this.clientes = new ArrayList<PrintStream>();
+	}
+	
+	
+	private void criarServerSocket() throws IOException {
+		this.serverSocket = new ServerSocket(this.porta);
+		System.out.println("Aguardando conexao na porta " + this.porta);
+	}
+	
+	
+	private void esperaConexao() throws IOException {
+		this.socket = serverSocket.accept();
+		System.out.println("Connectando cliente no host "+ socket.getInetAddress().getHostAddress());
+		
+		PrintStream ps = new PrintStream(socket.getOutputStream());
+		this.clientes.add(ps);
+		
+		EnviadorServidor es = new EnviadorServidor(socket.getInputStream(), this);
+		new Thread(es).start();
+	}
+	
+	public void broadcast(String msg) {
+		System.out.println(msg); 
+		for (PrintStream cliente : this.clientes) {
+            cliente.println(msg);
+        }
+	}
+	
+	
+	public static void main(String[] args) throws IOException {
+		Server servidor = new Server(2525);
+		servidor.criarServerSocket();
+		servidor.esperaConexao();
+	}
+}

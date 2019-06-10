@@ -1,0 +1,29 @@
+package wthread;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
+
+public class EnviadorCliente implements Runnable{
+	private PrintStream output;
+	private String nome;
+	
+	public EnviadorCliente(OutputStream output, String nome) {
+		this.output = new PrintStream(output);
+		this.nome = nome;
+	}
+
+	@Override
+	public void run() {
+		Scanner input = new Scanner(System.in);
+		
+		while(!input.nextLine().contentEquals("/sair")) {
+			this.output.println(this.nome + " diz: " + input.nextLine());
+		}
+		
+		input.close();
+		output.close();
+		System.out.println("Fim da conexao");
+	}
+
+}

@@ -1,0 +1,38 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+
+
+public class Enviador extends Thread implements Runnable{
+	private Socket socket;
+	private String nomeCliente;
+	
+	public Enviador(Socket socket, String nome) {
+		this.socket = socket;
+		this.nomeCliente= nome;
+	}
+	
+	@Override
+	public void run() {
+		try {
+			BufferedReader keyboad = new BufferedReader(new InputStreamReader(System.in));
+			PrintStream output = new PrintStream(socket.getOutputStream());
+			boolean connection = true;
+			while (true) {
+				System.out.print("> ");
+				String linha = keyboad.readLine();
+				if (connection) {
+					break;
+				}
+				output.println(linha);
+			}
+		}
+		catch(IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+}

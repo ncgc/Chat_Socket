@@ -1,0 +1,28 @@
+package wthread;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.List;
+import java.util.Scanner;
+
+public class EnviadorServidor implements Runnable{
+	private InputStream input;
+	private Server servidor;
+	
+	public EnviadorServidor(InputStream input, Server servidor) {
+		this.input = input;
+		this.servidor = servidor;
+	}
+
+	@Override
+	public void run() {
+		Scanner s = new Scanner(this.input);
+		while(s.hasNextLine()) {
+			servidor.broadcast(s.nextLine());
+		}
+		s.close();
+	}
+
+	
+	
+}

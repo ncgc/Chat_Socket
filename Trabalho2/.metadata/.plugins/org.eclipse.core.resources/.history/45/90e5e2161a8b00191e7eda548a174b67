@@ -1,0 +1,13 @@
+package wthread;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+public class EnviadorCliente implements Runnable{
+	private PrintStream output;
+	
+	public EnviadorCliente(OutputStream output) {
+		this.output = new PrintStream(output);
+	}
+
+}

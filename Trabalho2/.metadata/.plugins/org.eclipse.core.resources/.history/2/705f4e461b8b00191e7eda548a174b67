@@ -1,0 +1,5 @@
+package wthread;
+
+public class RecebedorServidor implements Runnable {
+
+}

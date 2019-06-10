@@ -1,0 +1,10 @@
+package wthread;
+
+public class RecebedorServidor implements Runnable {
+
+	@Override
+	public void run() {
+		
+	}
+
+}

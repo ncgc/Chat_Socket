@@ -1,0 +1,63 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.Enumeration;
+import java.util.Vector;
+
+public class Conexao implements Runnable{
+	private Socket socket;
+	private String name;
+	private Vector<PrintStream> recebedores;
+
+	public Conexao(Socket socket) {
+		this.socket = socket;
+	}
+	
+	public void broadCast(PrintStream output, String verbo, String linha) throws IOException {
+		Enumeration e = recebedores.elements();
+
+		while (e.hasMoreElements()) {
+			PrintStream chat = (PrintStream) e.nextElement();
+
+			if (chat != output) {
+				chat.println(name + verbo + linha);
+			}
+		}
+	}
+	
+	@Override
+	public void run() {
+		
+		try {
+			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintStream output = new PrintStream(socket.getOutputStream());
+
+			name = input.readLine();
+
+			if (name == null) {
+				return;
+			}
+
+			recebedores.add(output);
+
+			String linha = input.readLine();
+
+			while (linha != null && !(linha.trim().equals(""))) {
+				broadcast(output, " diz: ", linha);
+				linha = input.readLine();
+			}
+
+			broadCast(output, " saiu: ", " do chat!");
+			clientes.remove(output);
+			socket.close();
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+}

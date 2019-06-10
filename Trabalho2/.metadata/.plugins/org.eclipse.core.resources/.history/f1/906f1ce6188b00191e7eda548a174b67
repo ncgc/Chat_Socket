@@ -1,0 +1,29 @@
+package wthread;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	private int porta;
+	private List<PrintStream> clientes;
+	
+	public Server(int porta) {
+		this.porta = porta;
+		this.clientes = new ArrayList<PrintStream>();
+	}
+	
+	
+	private void criarServerSocket() throws IOException {
+		this.serverSocket = new ServerSocket(this.porta);
+		System.out.println("Aguardando conexao na porta " + this.porta);
+	}
+	
+	
+	private void esperaConexao() throws IOException {
+		Socket socket = serverSocket.accept();
+		System.out.println("Connectando cliente no host "+ socket.getInetAddress().getHostAddress());
+		
+		PrintStream ps = new PrintStream(socket.getOutputStream());
+		this.clientes.add(ps);
+		
+		
+
+}

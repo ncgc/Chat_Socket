@@ -1,0 +1,57 @@
+package server;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	private int porta;
+	
+	private final String nome = "Server";
+	public Socket socket;
+	
+	public Server(int porta) {
+		this.porta = porta;
+		this.clientes = new ArrayList<PrintStream>();
+	}
+	
+	public Server(Socket socket) {
+		this.socket = socket;
+	}
+	
+	private void criarServerSocket() throws IOException {
+		this.serverSocket = new ServerSocket(this.porta);
+		System.out.println("Aguardando conexao na porta " + this.porta);
+	}
+	
+	
+	private void esperaConexao() throws IOException {
+		this.socket = serverSocket.accept();
+		System.out.println("Connectando cliente..." + socket.getInetAddress().getHostAddress());
+		
+		//cria tratador de conexao em uma nova thread
+		Thread t = new Conexao(this.socket);
+		t.start();
+	}
+	
+
+	
+	public static void main(String[] args) {
+		try {
+			Server servidor = new Server(2525);
+			servidor.criarServerSocket();
+			while(true) {
+				servidor.esperaConexao();
+			}
+		}
+		catch(IOException e) {
+			
+		}
+	
+	}
+
+}

@@ -1,77 +1,79 @@
 package server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
 
-public class Client {
+
+public class Client extends Thread {
+
+	private static boolean connection = false;
 	private Socket socket;
-	private String host;
-	private int porta;
-	private String nome;
-	
-	public Client(String host, int porta, String nome) {
-		this.host = host;
-		this.porta = porta;
-		this.nome = nome;
-	}
-	
-	public void criaSocket() throws UnknownHostException, IOException {
-		this.socket = new Socket(this.host, this.porta);
-		System.out.println("Conexao estabelecida");
-	}
-	
-	public void criaThread() throws IOException {
-		Recebedor r = new Recebedor(this.socket.getInputStream());
-		new Thread(r).start();
+
+	public Client(Socket socket) {
+		this.socket = socket;
 	}
 
-	private void trataConexao() throws IOException{
-		try {	
-			Scanner input = new Scanner(System.in);
-			PrintStream output = new PrintStream(socket.getOutputStream());
-			
-			boolean flag = true;
-			while (flag){
-				output.println(this.nome + ": " + input.nextLine());
-				if(input.nextLine().contentEquals("/sair")) {
-					flag = false;
+	@Override
+	public void run() {
+		try {
+			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+			while (true) {
+				String linha = input.readLine();
+
+				if (linha == null) {
+					System.out.println("Fim da conexão");
+					break;
 				}
+
+				System.out.println(linha);
+				System.out.println("> ");
+
 			}
-			
-			input.close();
-			output.close();
+
 		} catch (IOException e) {
-			//e.printStackTrace();
-			System.out.println("Erro durante o envio da mensagem do cliente ao servidor");
-			System.out.println("Erro: " + e.getMessage());
+			System.out.println(e.getMessage());
+		}
+		connection = true;
+	}
+
+	public static void main(String[] args) {
+		try {
+		
 			
-		} finally {
-			fechaSocket(socket);
+			Socket socket = new Socket("127.0.0.1", 2000);
+
+		
+			BufferedReader keyboad = new BufferedReader(new InputStreamReader(System.in));
+			PrintStream output = new PrintStream(socket.getOutputStream());
+
+			System.out.println("Insira seu nome: ");
+			String name = keyboad.readLine();
+			output.println(name);
+
+			
+			Thread t = new Client(socket);
+			t.start();
+
+			
+			while (true) {
+				System.out.print("> ");
+				String linha = keyboad.readLine();
+
+				
+				if (connection) {
+					break;
+				}
+				output.println(linha);
+			}
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
 	}
-	
-	private void fechaSocket(Socket socket) throws IOException {
-		socket.close();
-	}
-	
-	public String getNome() {
-		return this.nome;
-	}
-	
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		System.out.println("Informe o host: ");
-		String host = new Scanner(System.in).nextLine();
-		
-		System.out.println("Informe o nickname: ");
-		String nickname = new Scanner(System.in).nextLine();
-		
-		Client cliente = new Client(host, 2525, nickname);
-		cliente.criaSocket();
-		cliente.criaThread();
-		cliente.trataConexao();
-	}
-	
+
 }
+

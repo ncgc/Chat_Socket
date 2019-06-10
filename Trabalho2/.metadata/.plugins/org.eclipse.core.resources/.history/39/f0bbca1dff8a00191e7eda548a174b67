@@ -1,0 +1,84 @@
+package server;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	private int porta;
+	private List<PrintStream> clientes;
+	private List<Socket> sockets;
+	
+	public Server(int porta) {
+		this.porta = porta;
+		this.clientes = new ArrayList<PrintStream>();
+	}
+	
+	
+	private void criarServerSocket() throws IOException {
+		this.serverSocket = new ServerSocket(this.porta);
+		System.out.println("Aguardando conexao na porta " + this.porta);
+	}
+	
+	
+	private Socket esperaConexao() throws IOException {
+		Socket socket = serverSocket.accept();
+		System.out.println("Connectando cliente..." + socket.getInetAddress().getHostAddress());
+		
+		//adiciona cliente a lista
+		PrintStream ps = new PrintStream(socket.getOutputStream());
+		this.clientes.add(ps);
+		
+		//cria tratador de conexao em uma nova thread
+		TrataConexao tc = new TrataConexao(socket.getInputStream(), this);
+		new Thread(tc).start();
+		
+		return socket;
+	}
+	
+	public void distribuiMensagem(String msg) {
+		System.out.println(msg);
+        // envia msg para todo mundo
+        for (PrintStream cliente : this.clientes) {
+            cliente.println(msg);
+        }
+    }
+	
+	public void respondeMensagem(Socket socket) throws IOException {
+		try {	
+			Scanner input = new Scanner(System.in);
+			PrintStream output = new PrintStream("Sever" + socket.getOutputStream());
+			
+			boolean flag = true;
+			while (flag){
+				output.println("Server: " + input.nextLine());
+				flag = false;
+			}
+		} catch (IOException e) {
+			//e.printStackTrace();
+			System.out.println("Erro durante o envio da mensagem do cliente ao servidor");
+			System.out.println("Erro: " + e.getMessage());
+			
+		} finally {
+			fechaSocket(socket);
+		}
+	}
+	
+	
+	private void fechaSocket(Socket socket) throws IOException {
+		socket.close();
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Server servidor = new Server(2525);
+		servidor.criarServerSocket();
+		Socket socket = servidor.esperaConexao();
+		servidor.respondeMensagem(socket);
+	}
+
+}

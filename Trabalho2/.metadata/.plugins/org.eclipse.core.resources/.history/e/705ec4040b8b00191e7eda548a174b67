@@ -1,0 +1,91 @@
+package server;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Enumeration;
+import java.util.Scanner;
+import java.util.Vector;
+
+public class Server {
+	private ServerSocket serverSocket; 
+	private int porta;
+	private Vector<PrintStream> clientes;
+	private final String nome = "Server";
+	public Socket socket;
+	
+	public Server(int porta) {
+		this.porta = porta;
+		this.clientes = new Vector<PrintStream>();
+	}
+	
+	
+	private void criarServerSocket() throws IOException {
+		this.serverSocket = new ServerSocket(this.porta);
+		System.out.println("Aguardando conexao na porta " + this.porta);
+	}
+	
+	
+	private void esperaConexao() throws IOException {
+		this.socket = serverSocket.accept();
+		System.out.println("Connectando cliente..." + socket.getInetAddress().getHostAddress());
+		
+		//adiciona cliente a lista
+		PrintStream ps = new PrintStream(socket.getOutputStream());
+		this.clientes.add(ps);
+		
+		//cria tratador de conexao em uma nova thread
+		TrataConexao tc = new TrataConexao(new InputStreamReader(socket.getInputStream()), this);
+		new Thread(tc).start();
+	}
+	
+	public void broadcast(PrintStream output, String verbo, String linha) throws IOException {
+		Enumeration e = clientes.elements();
+
+		while (e.hasMoreElements()) {
+			PrintStream chat = (PrintStream) e.nextElement();
+			if (chat != output) {
+				chat.println(nome + verbo + linha);
+			}
+		}
+	}
+	
+	public void respondeMensagem() throws IOException {
+		try {	
+			Scanner input = new Scanner(System.in);
+			PrintStream output = new PrintStream(this.socket.getOutputStream());
+			
+			
+			boolean flag = true;
+			while (flag){
+				output.println("Server: " + input.nextLine());
+				
+			}
+		} catch (IOException e) {
+			//e.printStackTrace();
+			System.out.println("Erro durante o envio da mensagem do cliente ao servidor");
+			System.out.println("Erro: " + e.getMessage());
+			
+		} finally {
+			fechaSocket(socket);
+		}
+	}
+	
+	public void leMensagem(String msg) {
+		System.out.println(msg);
+	}
+	
+	private void fechaSocket(Socket socket) throws IOException {
+		socket.close();
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Server servidor = new Server(2525);
+		servidor.criarServerSocket();
+		servidor.esperaConexao();
+		servidor.respondeMensagem();
+	}
+
+}

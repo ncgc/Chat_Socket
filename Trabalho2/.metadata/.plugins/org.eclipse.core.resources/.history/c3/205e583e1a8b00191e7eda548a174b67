@@ -1,0 +1,52 @@
+package wthread;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
+
+public class Client {
+	private String host;
+	private int port;
+	private Socket socket;
+	private String nome;
+	
+	public Client(String host, int port, String nome) {
+		this.host = host;
+		this.port = port;
+		this.nome = nome;
+	}
+	
+	public void criaSocket() throws UnknownHostException, IOException {
+		this.socket = new Socket(this.host, this.port);
+		System.out.println("Conexao estabelecida");
+	}
+	
+	public void criaRecebedor() throws IOException {
+		RecebedorCliente r = new RecebedorCliente(this.socket.getInputStream());
+		new Thread(r).start();
+	}
+	
+	public void criaEnviador() throws IOException {
+		EnviadorCliente ec = new EnviadorCliente(this.socket.getOutputStream(), this.nome);
+		new Thread(ec).start();
+	}
+	
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		System.out.println("Informe o host: ");
+		String host = new Scanner(System.in).nextLine();
+		
+		System.out.println("Informe o nickname: ");
+		String nickname = new Scanner(System.in).nextLine();
+		
+		Client cliente = new Client(host, 2525, nickname);
+		cliente.criaSocket();
+		cliente.criaRecebedor();
+		cliente.criaEnviador();
+	}
+}

@@ -1,0 +1,11 @@
+package wthread;
+
+public class Enviador implements Runnable{
+	private InputStream input;
+	
+	public Enviador(InputStream input) {
+		this.input = input;
+	}
+	
+
+}
