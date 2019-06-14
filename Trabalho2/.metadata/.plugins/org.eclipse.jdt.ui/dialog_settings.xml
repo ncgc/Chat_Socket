@@ -36,7 +36,7 @@
 	</section>
 	<section name="FatJarPackageWizard">
 		<item value="C:\Users\natal\Documents\2019.1\Redes\2  bimestre\Trabalho2" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
-		<item value="Client - Trabalho2" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
+		<item value="Client (1) - Trabalho2" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
 		<item value="C:\Users\natal\Desktop\trabalho2_client.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
 		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>

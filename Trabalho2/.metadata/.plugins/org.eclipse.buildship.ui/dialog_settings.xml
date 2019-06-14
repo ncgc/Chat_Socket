@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.buildship.ui.wizard.project.creation">
+		<item value="true" key="use_default_location"/>
+		<item value="C:\Users\natal\Documents\2019.1\Redes\2  bimestre\Trabalho\Chat_Socket\Trabalho2\Servidor" key="project_location"/>
+	</section>
+</section>
